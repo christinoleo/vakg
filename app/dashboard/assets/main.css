@@ -1,0 +1,37 @@
+.app {
+    height: 100vh;
+}
+
+.fillh {
+    height: 100%;
+    padding: 0;
+}
+
+.nopadding {
+    padding: 0;
+}
+
+.paint {
+    background: orange;
+}
+
+.map {
+
+}
+
+.divider {
+    height: 3px;
+    background: #cbcbcb;
+}
+
+.graph-title {
+    align-content: center;
+    text-align: center;
+}
+
+.vertical-center {
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
+}
+

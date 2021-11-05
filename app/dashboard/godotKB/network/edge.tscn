@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://network/edge.gd" type="Script" id=1]
+[ext_resource path="res://assets/theme.tres" type="Theme" id=2]
+[ext_resource path="res://assets/edge.tscn" type="PackedScene" id=3]
+
+[sub_resource type="Curve2D" id=1]
+resource_local_to_scene = true
+_data = {
+"points": PoolVector2Array(  )
+}
+
+[node name="edge" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="loopedge" parent="." instance=ExtResource( 3 )]
+visible = false
+
+[node name="normaledge" parent="." instance=ExtResource( 3 )]
+curve = SubResource( 1 )
+_curve = SubResource( 1 )
+
+[node name="Label" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -130.0
+margin_top = -82.5
+margin_right = 130.0
+margin_bottom = 40.5005
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 7
+size_flags_vertical = 7
+theme = ExtResource( 2 )
+text = "asdasd"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

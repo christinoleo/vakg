@@ -1,0 +1,8 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=2]
+
+[sub_resource type="StreamTexture" id=1]
+load_path = "res://.import/roguelikeChar_magenta.png-1bdd4a1227a400839409686fdfd3f561.stex"
+
+[resource]
+atlas = SubResource( 1 )
+region = Rect2( 103, 0, 203, 34 )

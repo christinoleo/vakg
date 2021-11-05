@@ -1,0 +1,86 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/custom_query/custom_query.gd" type="Script" id=1]
+[ext_resource path="res://assets/theme_small.tres" type="Theme" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0.1632, 0.18496, 0.24, 1 )
+border_color = Color( 0.2106, 0.2106, 0.26, 1 )
+border_blend = true
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[node name="custom_query" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="gui" type="CanvasLayer" parent="."]
+
+[node name="drawer" type="VSplitContainer" parent="gui"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 5.0
+margin_top = 5.0
+margin_right = -5.0
+margin_bottom = -5.0
+split_offset = 435
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="blank" type="Control" parent="gui/drawer"]
+margin_right = 1014.0
+margin_bottom = 435.0
+mouse_filter = 1
+
+[node name="bottom" type="HSplitContainer" parent="gui/drawer"]
+margin_top = 447.0
+margin_right = 1014.0
+margin_bottom = 590.0
+split_offset = -14
+
+[node name="query" type="TextEdit" parent="gui/drawer/bottom"]
+margin_right = 487.0
+margin_bottom = 143.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 2 )
+text = "MATCH (u1)-[r]-(u2) RETURN *"
+show_line_numbers = true
+draw_tabs = true
+draw_spaces = true
+breakpoint_gutter = true
+highlight_all_occurrences = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="result" type="TextEdit" parent="gui/drawer/bottom"]
+margin_left = 499.0
+margin_right = 1014.0
+margin_bottom = 143.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 2 )
+custom_styles/normal = SubResource( 1 )
+text = "result
+asd
+asd
+asd
+asd
+as
+das
+d"
+readonly = true
+show_line_numbers = true
+fold_gutter = true
+hiding_enabled = true
+
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]

@@ -1,0 +1,55 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://assets/CustomShape2D.tscn" type="PackedScene" id=1]
+[ext_resource path="res://network/node.gd" type="Script" id=2]
+[ext_resource path="res://assets/theme.tres" type="Theme" id=3]
+[ext_resource path="res://assets/NeoCircleShape.gd" type="Script" id=4]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 109.754
+
+[sub_resource type="ConvexPolygonShape2D" id=2]
+points = PoolVector2Array( -110, 1.34707e-14, -109.059, -14.3579, -106.252, -28.4701, -101.627, -42.0952, -95.2628, -55, -87.2689, -66.9638, -77.7817, -77.7817, -66.9638, -87.2689, -55, -95.2628, -42.0952, -101.627, -28.4701, -106.252, -14.3579, -109.059, -2.0206e-14, -110, 14.3579, -109.059, 28.4701, -106.252, 42.0952, -101.627, 55, -95.2628, 66.9638, -87.2689, 77.7817, -77.7817, 87.2689, -66.9638, 95.2628, -55, 101.627, -42.0952, 106.252, -28.4701, 109.059, -14.3579, 110, 0, 109.059, 14.3579, 106.252, 28.4701, 101.627, 42.0952, 95.2628, 55, 87.2689, 66.9638, 77.7817, 77.7817, 66.9638, 87.2689, 55, 95.2628, 42.0952, 101.627, 28.4701, 106.252, 14.3579, 109.059, 6.73533e-15, 110, -14.3579, 109.059, -28.4701, 106.252, -42.0952, 101.627, -55, 95.2628, -66.9638, 87.2689, -77.7817, 77.7817, -87.2689, 66.9638, -95.2628, 55, -101.627, 42.0952, -106.252, 28.4701, -109.059, 14.3579, -110, 1.34707e-14 )
+script = ExtResource( 4 )
+radius = 110.0
+resolution = 48
+
+[sub_resource type="ConvexPolygonShape2D" id=3]
+points = PoolVector2Array( -100, 1.22461e-14, -99.1445, -13.0526, -96.5926, -25.8819, -92.388, -38.2683, -86.6025, -50, -79.3353, -60.8761, -70.7107, -70.7107, -60.8761, -79.3353, -50, -86.6025, -38.2683, -92.388, -25.8819, -96.5926, -13.0526, -99.1445, -1.83691e-14, -100, 13.0526, -99.1445, 25.8819, -96.5926, 38.2683, -92.388, 50, -86.6025, 60.8761, -79.3353, 70.7107, -70.7107, 79.3353, -60.8761, 86.6025, -50, 92.388, -38.2683, 96.5926, -25.8819, 99.1445, -13.0526, 100, 0, 99.1445, 13.0526, 96.5926, 25.8819, 92.388, 38.2683, 86.6025, 50, 79.3353, 60.8761, 70.7107, 70.7107, 60.8761, 79.3353, 50, 86.6025, 38.2683, 92.388, 25.8819, 96.5926, 13.0526, 99.1445, 6.12303e-15, 100, -13.0526, 99.1445, -25.8819, 96.5926, -38.2683, 92.388, -50, 86.6025, -60.8761, 79.3353, -70.7107, 70.7107, -79.3353, 60.8761, -86.6025, 50, -92.388, 38.2683, -96.5926, 25.8819, -99.1445, 13.0526, -100, 1.22461e-14 )
+script = ExtResource( 4 )
+radius = 100.0
+resolution = 48
+
+[node name="node" type="RigidBody2D"]
+input_pickable = true
+script = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="HoverShape" parent="." instance=ExtResource( 1 )]
+shape = SubResource( 2 )
+color = Color( 0.235294, 0.164706, 0.87451, 0.443137 )
+
+[node name="CustomShape2D" parent="." instance=ExtResource( 1 )]
+shape = SubResource( 3 )
+
+[node name="Label" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -100.0
+margin_top = -100.0
+margin_right = 100.0
+margin_bottom = 100.0
+theme = ExtResource( 3 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "node"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

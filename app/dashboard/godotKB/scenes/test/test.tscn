@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://network/network.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Camera2D.gd" type="Script" id=2]
+[ext_resource path="res://scenes/test/test.gd" type="Script" id=3]
+
+[node name="test" type="Node2D"]
+position = Vector2( -2.26315, 7.54747 )
+script = ExtResource( 3 )
+
+[node name="network" parent="." instance=ExtResource( 1 )]
+position = Vector2( 6.22179, 7.38913 )
+camera = NodePath("../Camera2D")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+zoom = Vector2( 5, 5 )
+script = ExtResource( 2 )
