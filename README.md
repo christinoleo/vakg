@@ -1,4 +1,5 @@
 # VAKGI
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5750019.svg)](https://doi.org/10.5281/zenodo.5750019)
 
 A sample implementation of VAKG
 
