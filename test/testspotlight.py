@@ -17,31 +17,38 @@ import requests
 print(requests.delete('http://localhost:8888/knowledge/graph/0/'))
 print(requests.post('http://localhost:8888/knowledge/new_state', json=dict(
     graph=dict(id=0),
-    va_sequence=dict(state=dict(state_data=dict(test=1)), update=dict(update_data=dict(test=1), user=1, analysis=1)),
+    va_sequence=dict(state=dict(state_data=dict(test=1)),
+                     update=dict(update_data=dict(test=1), user=1, analysis=1)),
 )).json())
 print(requests.post('http://localhost:8888/knowledge/new_state', json=dict(
     graph=dict(id=0),
-    va_sequence=dict(state=dict(state_data=dict(test=2)), update=dict(update_data=dict(test=2), user=1, analysis=1)),
+    va_sequence=dict(state=dict(state_data=dict(test=2)),
+                     update=dict(update_data=dict(test=2), user=1, analysis=1)),
 )).json())
 print(requests.post('http://localhost:8888/knowledge/new_state', json=dict(
     graph=dict(id=0),
-    va_sequence=dict(state=dict(state_data=dict(test=3)), update=dict(update_data=dict(test=3), user=1, analysis=1)),
+    va_sequence=dict(state=dict(state_data=dict(test=3)),
+                     update=dict(update_data=dict(test=3), user=1, analysis=1)),
 )).json())
 print(requests.post('http://localhost:8888/knowledge/new_state', json=dict(
     graph=dict(id=0),
-    va_sequence=dict(state=dict(state_data=dict(test=1)), update=dict(update_data=dict(test=1), user=2, analysis=2)),
+    va_sequence=dict(state=dict(state_data=dict(test=1)),
+                     update=dict(update_data=dict(test=1), user=2, analysis=2)),
 )).json())
 print(requests.post('http://localhost:8888/knowledge/new_state', json=dict(
     graph=dict(id=0),
-    va_sequence=dict(state=dict(state_data=dict(test=3)), update=dict(update_data=dict(test=3), user=2, analysis=2)),
+    va_sequence=dict(state=dict(state_data=dict(test=3)),
+                     update=dict(update_data=dict(test=3), user=2, analysis=2)),
 )).json())
 print(requests.post('http://localhost:8888/knowledge/new_state', json=dict(
     graph=dict(id=0),
-    u_sequence=dict(state=dict(state_data=dict(knowledge=3)), update=dict(update_data=dict(knowledge=3), user=1, analysis=1)),
+    u_sequence=dict(state=dict(state_data=dict(knowledge=3)),
+                    update=dict(update_data=dict(knowledge=3), user=1, analysis=1)),
 )).json())
 print(requests.post('http://localhost:8888/knowledge/new_state', json=dict(
     graph=dict(id=0),
-    u_sequence=dict(state=dict(state_data=dict(knowledge=30)), update=dict(update_data=dict(knowledge=30), user=2, analysis=2)),
+    u_sequence=dict(state=dict(state_data=dict(knowledge=30)),
+                    update=dict(update_data=dict(knowledge=30), user=2, analysis=2)),
 )).json())
 
 # %%

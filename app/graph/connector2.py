@@ -1,6 +1,9 @@
+import time
 from contextlib import contextmanager
 
+import yappi
 from py2neo import Graph
+from pyinstrument import Profiler
 
 from credentials import url, login, password
 
@@ -8,19 +11,28 @@ from credentials import url, login, password
 class NeoSession:
     def __init__(self, url, user, password):
         self.url = url
-        self.engine = Graph(self.url, auth=(user, password))
+        self.engine = Graph(self.url, auth=(user, password), init_size=2, max_size=5)
 
     def get_db(self):
+        # t1 = time.time()
+        # print(f'Time Start!')
         tx = self.engine.begin()
         try:
             yield tx
+            # t2 = time.time()
+            # print(f'T Time: {t2-t1}')
         except Exception as e:
             self.engine.rollback(tx)
-            raise Exception('Problem', e)
+            # t2 = time.time()
+            # print(f'E Time: {t2-t1}')
+            raise e
         finally:
             if not tx.closed:
                 print('CLOSED', tx)
                 self.engine.commit(tx)
+
+            # t2 = time.time()
+            # print(f'F Time: {t2-t1}')
 
 
 def neodb():
