@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from credentials import url, login, password
+from credentials_ import url, login, password
 
 from neo4j import GraphDatabase
 

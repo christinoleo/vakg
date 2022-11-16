@@ -5,13 +5,13 @@ import yappi
 from py2neo import Graph
 from pyinstrument import Profiler
 
-from credentials import url, login, password
+from credentials_ import url, login, password
 
 
 class NeoSession:
     def __init__(self, url, user, password):
         self.url = url
-        self.engine = Graph(self.url, auth=(user, password), init_size=2, max_size=5)
+        self.engine = Graph(self.url, auth=(user, password), user=user, password=password, init_size=2, max_size=5)
 
     def get_db(self):
         # t1 = time.time()

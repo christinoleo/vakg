@@ -67,7 +67,6 @@ def apply_sequence(tx, seq: Sequence, graph: GraphData, prefix='C'):
     if 'base64' in seq.update.metadata:
         update_data['ref'] = str(uuid.uuid4())
         with open(f"local_storage/images/{update_data['ref']}.jpg", "wb") as fh:
-            print(seq.update.metadata['base64'])
             fh.write(base64.urlsafe_b64decode(seq.update.metadata['base64'].split(',')[1]))
     update_node = Node(f'{prefix}_UPDATE', **update_data)
     tx.create(r_leads_to(update_node, state_node, **relationship_data))
@@ -125,6 +124,9 @@ def new_state(graph: GraphData,
             graph_id=graph.id, analysis=analysis, user=user)
         if state_h is not None and state_c is not None:
             tx.create(Relationship(state_h, r_interact.label, state_c))
+            if tx.run('match (m:H_STATE)-[e:FEEDBACK]-()-[:UPDATE*0..30]-(m1:C_STATE) where ID(m)=$idm and ID(m1)=$idm1 return count(e) as n',
+                      idm=state_h.identity, idm1=state_c.identity).data()[0]['n'] == 0:
+                tx.create(Relationship(state_c, r_feedback.label, state_h))
 
     if h_sequence is not None:
         h_sequence.update.analysis = analysis
@@ -156,7 +158,7 @@ async def delete_graph(graph_id: int, tx: Transaction = Depends(neodbsession.get
            graph_id=graph_id)
     # yappi.get_func_stats()._save_as_PSTAT('E:\Projects\phd\knowledgebase\call.pstat')
 
-    # files = glob.glob('local_storage/images/*')
-    # for f in files:
-    #     os.remove(f)
+    files = glob.glob('local_storage/images/*')
+    for f in files:
+        os.remove(f)
     return 'deleted'

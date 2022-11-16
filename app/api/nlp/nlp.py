@@ -16,7 +16,7 @@ url = '/nlp'
 
 
 def remove_stopwords(text: str) -> Tuple[list, nlp]:
-    nlptext = nlp(text)
+    nlptext = nlp(text.lower())
     lemmas = [t.lemma_ for t in nlptext if not t.is_stop and not t.is_punct]
     return lemmas, nlptext
 
