@@ -28,6 +28,12 @@ origins = [
     "http://localhost:3000",
     "http://localhost:8001",
     "http://localhost:8888",
+    "https://ocean.aknakos.com",
+    "https://ocean.aknakos.com/",
+    "https://qol.vav.aknakos.com",
+    "http://qol.vav.aknakos.com",
+    "https://qol.vav.aknakos.com/",
+    "http://qol.vav.aknakos.com/",
 ]
 
 app.add_middleware(
