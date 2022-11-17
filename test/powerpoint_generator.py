@@ -1,6 +1,13 @@
 # %%
 import base64
 import math
+import os
+
+os.environ['NEO4J_LOGIN'] = "neo4j"
+os.environ['NEO4J_URL'] = "bolt://192.168.0.17:7687"
+os.environ['NEO4J_PASSWORD'] = "1234554321"
+
+
 from time import sleep
 from pptx import Presentation
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
@@ -76,10 +83,12 @@ class Chrome:
     def __init__(self, wait=5):
         self.driver = webdriver.Chrome('../local_storage/chromedriver.exe')
         self.url = 'http://localhost:3000/'
+        self.qolurl = 'https://qol.vav.aknakos.com/'
+        self.oceanurl = 'https://ocean.aknakos.com/'
         self.wait = wait
 
     def setup_pic_wbt(self):
-        self.driver.get(self.url)
+        self.driver.get(self.qolurl)
         element = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, 'disable-tutorial'))
         )
@@ -89,7 +98,7 @@ class Chrome:
         )
 
     def setup_pic_ocean(self):
-        self.driver.get(self.url)
+        self.driver.get(self.oceanurl)
         loginfield = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, "login-field"))
         )
@@ -229,18 +238,23 @@ def generate_pptx(filename, query, chrome, **args):
 
 
 if __name__ == '__main__':
+    # url = "neo4j+s://3110ee21.databases.neo4j.io:7687"
+    # password = "siufSfV2MhA8Rm_vuB9gaPwC9ajn5UHiym1FXc9SS9w"
+
+
     takepictures = True
     chrome = None
     if takepictures:
         chrome = Chrome(15)
-        # chrome.setup_pic_wbt()
-        chrome.setup_pic_ocean()
+        chrome.setup_pic_wbt()
+        # chrome.setup_pic_ocean()
 
     generate_pptx('../local_storage/test.pptx',
                   CypherPath.INSIGHT_FROM_CLOSEST_NEAR_INTENTION,
                   # CypherPath.ONLY_INSIGHT,
                   # CypherPath.INSIGHT_FROM_LONGEST_NEAR_INTENTION,
-                  insight='south seems to have more sensors',
+                  insight='Parents in CBRM tend to most frequently report this barrier',
+                  # insight='south seems to have more sensors',
                   # insight='asd'
                   chrome=chrome
                   )

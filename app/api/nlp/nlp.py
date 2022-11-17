@@ -67,4 +67,4 @@ async def get_similar(text: str, r: NLPGetFilteredNodes, tx: Transaction = Depen
         {node_key: item, 'score': sublist['score'], 'lemmas': sublist['lemmas']}
         for sublist in res for item in sublist[node_key]
     ]
-    return dict(suggestions=res[:10], lemmas=sorted(lemma))
+    return dict(suggestions=res[:5], lemmas=sorted(lemma))
