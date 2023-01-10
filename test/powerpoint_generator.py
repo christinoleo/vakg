@@ -3,6 +3,8 @@ import base64
 import math
 import os
 
+
+# NEO4J setup
 os.environ['NEO4J_LOGIN'] = "neo4j"
 os.environ['NEO4J_URL'] = "bolt://192.168.0.17:7687"
 os.environ['NEO4J_PASSWORD'] = "1234554321"
@@ -30,13 +32,17 @@ from pptx import Presentation
 
 class CypherPath:
     INSIGHT_FROM_CLOSEST_NEAR_INTENTION = '''
-        match p2=((n:H_UPDATE {text:$insight, label:'insight'})-[:LEADS_TO]->(i)<-[:INSIGHT*0..20]-(j)-[:LEADS_TO]-(n1:H_UPDATE {label:'intention'}))
+        match p2=((n:H_UPDATE {text:$insight, label:'insight'})-[:LEADS_TO]->(i)-[:INSIGHT*0..20]-(j)-[:LEADS_TO]-(n1:H_UPDATE {label:'intention'}))
         match p1=(
             (n1)-[:LEADS_TO]-()-[:FEEDBACK]-(c)-[:UPDATE*0..20]-(m:C_STATE)-[:FEEDBACK]-()-[:LEADS_TO]-(n)
             )
         WITH nodes(p1) as px order by length(p1) limit 1
         UNWIND px as mainPath
-        optional match (mainPath)-[:LEADS_TO]-(interactions:C_UPDATE)
+        CALL{
+            with mainPath
+            optional match (mainPath)-[:LEADS_TO]-(interactions:C_UPDATE)
+            return interactions LIMIT 1
+        }
         return mainPath, interactions
         '''
     INSIGHT_FROM_LONGEST_NEAR_INTENTION = '''
@@ -52,6 +58,24 @@ class CypherPath:
     ONLY_INSIGHT = '''
         match p1=((n:H_UPDATE {text:$insight, label:'insight'}))
         return p1 limit 1
+        '''
+    ALL_INSIGHTS_FROM_INTENTION = '''MATCH intention_path=
+    ((n:H_UPDATE {text:$intention, label:'intention', tool:'qol'})
+    -[:LEADS_TO]-(i)-[:INSIGHT*0..20]-(j)-[:LEADS_TO]
+    -(n1:H_UPDATE {label:'insight', tool:'qol'}))
+    WITH nodes(intention_path) as px
+    UNWIND px as mainPath
+    return mainPath, count(mainPath)'''
+    INSIGHT_INTENTION = '''
+        match p1=((n1:H_UPDATE {text:$intention, label:'intention'})-[:LEADS_TO]-()-[:FEEDBACK]-(c)-[:UPDATE*0..20]-(m:C_STATE)-[:FEEDBACK]-()-[:LEADS_TO]-(n:H_UPDATE {text:$insight, label:'insight'}))
+        WITH nodes(p1) as px order by length(p1) limit 1
+        UNWIND px as mainPath
+        CALL{
+            with mainPath
+            optional match (mainPath)-[:LEADS_TO]-(interactions:C_UPDATE)
+            return interactions LIMIT 1
+        }
+        return mainPath, interactions
         '''
 
     def run(self, query, **args):
@@ -83,6 +107,8 @@ class Chrome:
     def __init__(self, wait=5):
         self.driver = webdriver.Chrome('../local_storage/chromedriver.exe')
         self.url = 'http://localhost:3000/'
+        # self.qolurl = 'http://localhost:3000/'
+        # setup to fetch proper website screenshot
         self.qolurl = 'https://qol.vav.aknakos.com/'
         self.oceanurl = 'https://ocean.aknakos.com/'
         self.wait = wait
@@ -128,6 +154,7 @@ class Chrome:
 def generate_pptx(filename, query, chrome, **args):
     cypher_path = CypherPath()
     nodes = cypher_path.run(query, **args)
+    print('length', len(nodes))
 
     prs = Presentation()
 
@@ -135,7 +162,7 @@ def generate_pptx(filename, query, chrome, **args):
     # for p in [nodes[-1]]:
     for i, p in enumerate(nodes):
         main = p['mainPath']
-        interaction = p['interactions']
+        interaction = p.get('interactions', {})
         url = interaction.get('url', None) if interaction else None
         href = None
         if url is None: url = main.get('url', None)
@@ -143,8 +170,8 @@ def generate_pptx(filename, query, chrome, **args):
             url = eval(url)
             href = url['href']
         if main.has_label('H_UPDATE') and main['label'] == 'intention':
-            blank_slide_layout = prs.slide_layouts[1]
-            slide = prs.slides.add_slide(blank_slide_layout)
+            title_slide_layout = prs.slide_layouts[0]
+            slide = prs.slides.add_slide(title_slide_layout)
             slide.shapes.title.text = 'Starting inquiry'
             slide.placeholders[1].text = main['text']
         # elif 'url' in p and (p.has_label('H_UPDATE') or ('event' in p and p['url'] != prev_url)):
@@ -153,22 +180,28 @@ def generate_pptx(filename, query, chrome, **args):
             text = interaction['label'] if interaction else main.get('event', main['label'])
             pic = chrome.take_pic(url['href'], url['screenWidth'], url['screenHeight']) if chrome is not None else None
 
-            blank_slide_layout = prs.slide_layouts[8]
-            slide = prs.slides.add_slide(blank_slide_layout)
+            picture_slide_layout = prs.slide_layouts[8]
+            slide = prs.slides.add_slide(picture_slide_layout)
+            picture_placeholder = slide.placeholders[1]
             shapes = slide.shapes
-            title = shapes.title
+            title = slide.placeholders[0]
+            s_text = slide.placeholders[2]
             title.text = ''
             if main.has_label('H_UPDATE'):
                 if i == len(nodes) - 1: title.text += 'Final Insight: '
                 else: title.text += 'Insight: '
-                title.text += main.get('text', text)
+                # title.text += main.get('text', text)
+                s_text.text += main.get('text', text)
             elif interaction is not None and interaction.has_label('C_UPDATE'):
-                title.text += 'Interaction: ' + main.get('text', text)
+                title.text += 'Interaction: '
+                # title.text += main.get('text', text)
+                s_text.text += main.get('text', text)
             else:
                 title.text = text
-            title.width = prs.slide_width
-            title.height = Inches(2)
-            title.top = prs.slide_height - Inches(2)
+            title.left, s_text.left = Inches(1), Inches(1)
+            title.width, s_text.width = prs.slide_width - Inches(2), prs.slide_width - Inches(2)
+            title.height, s_text.height = Inches(0.5), Inches(1)
+            title.top, s_text.top = prs.slide_height - Inches(3), prs.slide_height - Inches(2)
 
             # slide.placeholders[0].text = 'Final Insight: ' + p['text'] if p.has_label('H_UPDATE') else p['event']
             # slide.placeholders[0].text = text
@@ -177,7 +210,13 @@ def generate_pptx(filename, query, chrome, **args):
 
             deltax = prs.slide_width / int(url['screenWidth'])
             deltay = deltax
-            pic_shape = shapes.add_picture(pic, 0, 0, prs.slide_width, url['screenHeight'] * deltay) if chrome is not None else None
+            if chrome is not None:
+                # pic_shape = shapes.add_picture(pic, 0, 0, prs.slide_width, url['screenHeight'] * deltay) if chrome is not None else None
+                picture_placeholder.left, picture_placeholder.top, picture_placeholder.width, picture_placeholder.height = 0, 0, prs.slide_width, int(url['screenHeight'] * deltay)
+                pic_shape = picture_placeholder.insert_picture(pic)
+                pic_shape.left, pic_shape.top, pic_shape.width, pic_shape.height = 0, 0, prs.slide_width, int(url['screenHeight'] * deltay)
+
+            title.top, s_text.top = int(url['screenHeight'] * deltay) + Inches(0.3), int(url['screenHeight'] * deltay) + Inches(0.85)
             print(deltay)
             for s in eval(main.get('shapes', '[]')):
                 if s['type'] == 'circle':
@@ -238,10 +277,6 @@ def generate_pptx(filename, query, chrome, **args):
 
 
 if __name__ == '__main__':
-    # url = "neo4j+s://3110ee21.databases.neo4j.io:7687"
-    # password = "siufSfV2MhA8Rm_vuB9gaPwC9ajn5UHiym1FXc9SS9w"
-
-
     takepictures = True
     chrome = None
     if takepictures:
@@ -249,13 +284,20 @@ if __name__ == '__main__':
         chrome.setup_pic_wbt()
         # chrome.setup_pic_ocean()
 
+    # examples of ppt generation:
     generate_pptx('../local_storage/test.pptx',
-                  CypherPath.INSIGHT_FROM_CLOSEST_NEAR_INTENTION,
+                  # CypherPath.INSIGHT_FROM_CLOSEST_NEAR_INTENTION,
+                  # CypherPath.ALL_INSIGHTS_FROM_INTENTION,
+                  CypherPath.INSIGHT_INTENTION,
                   # CypherPath.ONLY_INSIGHT,
                   # CypherPath.INSIGHT_FROM_LONGEST_NEAR_INTENTION,
-                  insight='Parents in CBRM tend to most frequently report this barrier',
+                  # insight='B0C lack opportunities to take formal education',
+                  # insight='B0C (Northern CBRM) seems to have the lowest satisfaction with access to ed',
+                  # insight='region "BOC" has a very low perception of access to educational opportuniti',
                   # insight='south seems to have more sensors',
-                  # insight='asd'
+                  intention='status of health in nova scotia',
+                  insight='B0C seems to be better related to its health perception',
+                  # intention='what area has concerns regarding access to education',
                   chrome=chrome
                   )
 
