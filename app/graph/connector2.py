@@ -1,9 +1,7 @@
 import time
 from contextlib import contextmanager
 
-import yappi
 from py2neo import Graph
-from pyinstrument import Profiler
 
 from credentials_ import url, login, password
 
@@ -11,7 +9,14 @@ from credentials_ import url, login, password
 class NeoSession:
     def __init__(self, url, user, password):
         self.url = url
-        self.engine = Graph(self.url, auth=(user, password), user=user, password=password, init_size=2, max_size=5)
+        self.engine = Graph(
+            self.url,
+            auth=(user, password),
+            user=user,
+            password=password,
+            init_size=2,
+            max_size=5,
+        )
 
     def get_db(self):
         # t1 = time.time()
@@ -28,7 +33,7 @@ class NeoSession:
             raise e
         finally:
             if not tx.closed:
-                print('CLOSED', tx)
+                print("CLOSED", tx)
                 self.engine.commit(tx)
 
             # t2 = time.time()
@@ -48,15 +53,19 @@ class HelloWorldExample:
 
     def print_greeting(self, message):
         with self.driver.get_db() as session:
-            greeting = session.write_transaction(self._create_and_return_greeting, message)
+            greeting = session.write_transaction(
+                self._create_and_return_greeting, message
+            )
             print(greeting)
 
     @staticmethod
     def _create_and_return_greeting(tx, message):
-        result = tx.run("CREATE (a:Greeting) "
-                        "SET a.message = $message "
-                        "RETURN a.message + ', from node ' + id(a)",
-                        message=message)
+        result = tx.run(
+            "CREATE (a:Greeting) "
+            "SET a.message = $message "
+            "RETURN a.message + ', from node ' + id(a)",
+            message=message,
+        )
         return result.single()[0]
 
 

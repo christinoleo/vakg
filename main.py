@@ -6,7 +6,8 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from pyinstrument import Profiler
+
+# from pyinstrument import Profiler
 from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
@@ -16,10 +17,18 @@ from uvicorn.config import LOGGING_CONFIG
 from app.api import include_routers
 
 if __name__ == "__main__":
+    print("API: http://localhost:8080/api/docs")
     # uvicorn.run(app, host="0.0.0.0", port=8888)
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8080, reload_dirs=['./app', './main.py'])
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        reload=True,
+        port=8080,
+        # reload_dirs=["./app", "./main.py"],
+    )
 
-app = FastAPI(title='test', docs_url="/api/docs", openapi_url="/api")
+print("API: http://localhost:8080/api/docs")
+app = FastAPI(title="test", docs_url="/api/docs", openapi_url="/api")
 
 # app.mount("/dash", WSGIMiddleware(dash_server))
 
@@ -38,27 +47,18 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-import yappi
-
-
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
-    # t1 = time.time()
-    # print(f'Time Start!')
-    # p = Profiler(async_mode='enabled')
-    # with p:
-    # request.state.db = SessionLocal()
     response = await call_next(request)
     # request.state.db.close()
-    response.headers["Access-Control-Expose-Headers"] = '*'
-    # p.print()
+    response.headers["Access-Control-Expose-Headers"] = "*"
     return response
 
 
@@ -71,7 +71,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-@app.get('/x')
+@app.get("/x")
 def test():
     return {}
 

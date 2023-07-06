@@ -1,8 +1,15 @@
-from app.api.knowledge.models import GetFilteredNodes, ConstrainedParameter
+from app.api.knowledge.models import (
+    GetFilteredNodes,
+    ConstrainedParameter,
+    Ownership,
+    Temporality,
+)
 
 
 class NLPGetFilteredNodes(GetFilteredNodes):
-    label: ConstrainedParameter = 'H_UPDATE'
-    return_value: ConstrainedParameter = 'text'
+    label: ConstrainedParameter = (
+        Ownership.HUMAN.value + "_" + Temporality.SEQUENCE.value
+    )
+    return_value: ConstrainedParameter = "text"
     distinct: bool = True
     min_score: float = 0.5

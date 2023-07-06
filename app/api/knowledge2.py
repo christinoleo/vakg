@@ -6,15 +6,15 @@ from pydantic import BaseModel
 from app.graph.connector import neodb
 
 router = APIRouter()
-url = '/knowledge'
+url = "/knowledge"
 
 
 class KnowledgeUpdateQuery(BaseModel):
     user: str
-    analysis: int
+    analysis: str
     what: str
     by: str
-    type: str = 'none'
+    type: str = "none"
 
 
 class KnowledgeQuery(BaseModel):
@@ -30,21 +30,24 @@ class ProcessedNeo4jQuery(BaseModel):
 
 
 def dict_converter(d: dict, prefix: str) -> Optional[ProcessedNeo4jQuery]:
-    if d is None: return None
+    if d is None:
+        return None
     # don't use any key with space, use with camelcase or _
     for k in d.keys():
-        if not isinstance(k, str) or ' ' in k:
-            raise Exception('Only strings with no spaces are allowed!')
-    return ProcessedNeo4jQuery(query=', '.join([f'{k}: ${prefix}{k}' for k in d.keys()]),
-                               argument={prefix + k: d[k] for k in d.keys()})
+        if not isinstance(k, str) or " " in k:
+            raise Exception("Only strings with no spaces are allowed!")
+    return ProcessedNeo4jQuery(
+        query=", ".join([f"{k}: ${prefix}{k}" for k in d.keys()]),
+        argument={prefix + k: d[k] for k in d.keys()},
+    )
 
 
 @router.post(url)
 async def get_all(r: KnowledgeQuery, db=Depends(neodb.get_db)):
-    from_state = dict_converter(r.from_state, 'from_state_')
-    update = dict_converter(r.update.dict(), 'update_')
-    to_state = dict_converter(r.to_state, 'to_state_')
-    knowledge = dict_converter(r.knowledge, 'knowledge_')
+    from_state = dict_converter(r.from_state, "from_state_")
+    update = dict_converter(r.update.dict(), "update_")
+    to_state = dict_converter(r.to_state, "to_state_")
+    knowledge = dict_converter(r.knowledge, "knowledge_")
     query = f"""
             MERGE (s1:STATE {{{from_state.query}}})
             MERGE (s2:STATE {{{to_state.query}}})
@@ -89,13 +92,14 @@ async def get_all(r: KnowledgeQuery, db=Depends(neodb.get_db)):
             return [ret1]
         else:
             params.update(knowledge.argument)
-            return tx.run(query,
-                          from_state=r.from_state,
-                          to_state=r.to_state,
-                          update=r.update.dict(),
-                          analysis=r.update.analysis,
-                          user=r.update.user
-                          ).data()
+            return tx.run(
+                query,
+                from_state=r.from_state,
+                to_state=r.to_state,
+                update=r.update.dict(),
+                analysis=r.update.analysis,
+                user=r.update.user,
+            ).data()
 
     with db as session:
         result = session.write_transaction(_run)
@@ -103,7 +107,7 @@ async def get_all(r: KnowledgeQuery, db=Depends(neodb.get_db)):
     return result
 
 
-@router.delete(url + '/all')
+@router.delete(url + "/all")
 async def delete_all(db=Depends(neodb.get_db)):
     query = f"""
     MATCH (u:UPDATE), (s:STATE)
