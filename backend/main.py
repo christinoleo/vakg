@@ -43,6 +43,10 @@ origins = [
     "http://qol.vav.aknakos.com",
     "https://qol.vav.aknakos.com/",
     "http://qol.vav.aknakos.com/",
+    "https://modkt.vav.aknakos.com/",
+    "http://modkt.vav.aknakos.com/",
+    "https://modkt.vav2.aknakos.com/",
+    "http://modkt.vav2.aknakos.com/",
 ]
 
 app.add_middleware(

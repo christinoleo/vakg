@@ -5,14 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "VAKG",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}/backend/main.py",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}"
-    },
-    {
       "name": "Python: Current File (Integrated Terminal)",
       "type": "python",
       "request": "launch",
@@ -21,13 +13,12 @@
       "cwd": "${workspaceFolder}"
     },
     {
-      "name": "Run Sveltekit",
-      "type": "node",
+      "name": "VAKG",
+      "type": "python",
       "request": "launch",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["dev"],
+      "program": "${workspaceFolder}\\main.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/frontend"
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
